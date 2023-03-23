@@ -10,39 +10,52 @@ class Band(base.Base):
         self.name = data['name']
         self.genre = data['genre']
         self.home_city = data['home_city']
-        
+    
     @classmethod
     def get_all(cls):
         query = """
-            SELECT * FROM bands
-            JOIN users ON users.id = bands.user_id;
+            SELECT bands.*, 
+            json_object(
+                "id", creator.id,
+                "first_name", creator.first_name,
+                "last_name", creator.last_name,
+                "email", creator.email,
+                "password", creator.password,
+                "mumbo_jumbo", creator.mumbo_jumbo,
+                "created_at", creator.created_at,
+                "updated_at", creator.updated_at
+            ) as creator_obj,
+            if(
+                count(members.id) = 0, 
+                json_array(),
+                json_arrayagg(
+                    json_object(
+                        "id", member.id,
+                        "first_name", member.first_name,
+                        "last_name", member.last_name,
+                        "email", member.email,
+                        "password", member.password,
+                        "mumbo_jumbo", member.mumbo_jumbo,
+                        "created_at", member.created_at,
+                        "updated_at", member.updated_at
+                    )
+                )
+            ) as member_list
+            FROM bands
+            JOIN users as creator ON bands.user_id = creator.id
+            LEFT JOIN members ON members.band_id = bands.id 
+            LEFT JOIN users as member ON members.user_id = member.id
+            GROUP BY bands.id;
         """
         results = mySQLconnect.connect(cls.db).run_query(query)
         bands = []
         if results:
             for info in results:
                 band = cls(info)
-                user_info = {
-                    **info,
-                    'id' : info["users.id"]
-                }
-                band.founder = user.User(user_info)
+                band.founder = user.User(eval(info['creator_obj']))
+                band.members = [user.User(member) for member in eval(info['member_list'])]
                 bands.append(band)
         return bands
-    
-    @classmethod
-    def get_membership(cls, data):
-        query = """
-            SELECT * FROM bands
-            JOIN members ON members.band_id = bands.id
-            WHERE bands.id=%(id)s;
-        """
-        results = mySQLconnect.connect(cls.db).run_query(query,data)
-        membership = set()
-        if results:
-            for info in results:
-                membership.add(info['members.user_id'])
-        return membership
     
     @staticmethod
     def is_valid(data:dict):

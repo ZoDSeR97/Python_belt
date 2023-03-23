@@ -26,13 +26,7 @@ def modBand(id):
     return redirect('/dashboard')
 
 
-@app.route('/mybands/delete/<int:id>')
+@app.route('/delete/<int:id>')
 def remove_band(id):
     band.Band.remove({'id':id})
-    return redirect('/mybands')
-
-
-@app.route('/dashboard/delete/<int:id>')
-def remove_band2(id):
-    band.Band.remove({'id': id})
-    return redirect('/dashboard')
+    return redirect(request.referrer)

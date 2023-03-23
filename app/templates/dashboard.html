@@ -33,8 +33,8 @@
                 <td>
                     {% if band.founder.id == user.id %}
                     | <a href="/edit/{{band.id}}">Edit</a>
-                    | <a href="/dashboard/delete/{{band.id}}">Delete</a>
-                    {% elif user.id in band.membership %}
+                    | <a href="/delete/{{band.id}}">Delete</a>
+                    {% elif user in band.members %}
                         <a href="/membership/quit/{{band.id}}">Quit</a>
                     {% else %}
                         <a href="/membership/join/{{band.id}}">Join</a>

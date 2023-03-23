@@ -3,11 +3,14 @@ from app.config.mySQLconnect import connect
 class Base:
     db = ""
     tbl_name = ""
-    def __init__(self, data) -> None:
-        self.id = data['id']
+    def __init__(self, data:dict) -> None:
+        self.id = data["id"]
         self.created_at = data["created_at"]
         self.updated_at = data["updated_at"]
-        
+    
+    def __eq__(self, other) -> bool:
+        return self.id == other.id and type(self) is type(other)
+    
     @staticmethod
     def contructArgs(data):
         return ", ".join(f"{key}=%({key})s" for key in data.keys() if key!="id")

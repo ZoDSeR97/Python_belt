@@ -7,7 +7,7 @@ import re, secrets
 class User(base.Base):
     db = 'band_db'
     tbl_name = 'users'
-    def __init__(self, data) -> None:
+    def __init__(self, data:dict) -> None:
         super().__init__(data)
         self.first_name = data['first_name']
         self.last_name = data['last_name']

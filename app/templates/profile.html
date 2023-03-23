@@ -22,7 +22,7 @@
                 <h1>My Bands</h1>
                 {% for band in user.band %}
                     {% if band.name %}
-                        <h3>{{band.name}} <a href="/edit/{{band.id}}">Edit</a> <a href="/mybands/delete/{{band.id}}"">Delete</a></h3>
+                        <h3>{{band.name}} <a href="/edit/{{band.id}}">Edit</a> <a href="/delete/{{band.id}}"">Delete</a></h3>
                     {% endif %}
                 {% endfor %}
             </div>
@@ -30,7 +30,7 @@
                 <h1>Joined Bands</h1>
                 {% for band in membership.band %}
                     {% if band.name %}
-                        <h3>{{band.name}} <a href="/quit/{{band.id}}">Quit</a></h3>
+                        <h3>{{band.name}} <a href="/membership/quit/{{band.id}}">Quit</a></h3>
                     {% endif %}
                 {% endfor %}
             </div>

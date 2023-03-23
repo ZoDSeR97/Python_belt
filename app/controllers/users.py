@@ -1,6 +1,6 @@
 from app import app
 from app.models import user, band
-from flask import render_template, redirect, request, session
+from flask import render_template, redirect, request, session, url_for
 
 @app.route('/')
 def index():
@@ -10,12 +10,9 @@ def index():
 def dashboard():
     if 'user_id' not in session:
         return redirect('/')
-    bands = band.Band.get_all()
-    for item in bands:
-        item.membership = band.Band.get_membership({'id':item.id})
     return render_template("dashboard.html", 
                            user=user.User.get_one({'id':session['user_id']})[0], 
-                           bands=bands)
+                           bands=band.Band.get_all())
 
 @app.route('/logout')
 def logout():
@@ -55,10 +52,4 @@ def join(id):
 @app.route('/membership/quit/<int:id>')
 def leave(id):
     user.User.quit_band({'user_id': session['user_id'], 'band_id': id})
-    return redirect('/dashboard')
-
-
-@app.route('/quit/<int:id>')
-def leave2(id):
-    user.User.quit_band({'user_id': session['user_id'], 'band_id': id})
-    return redirect('/mybands')
+    return redirect(request.referrer)
